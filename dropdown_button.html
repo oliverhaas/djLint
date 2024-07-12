@@ -1,5 +1,4 @@
 {% load wagtailadmin_tags i18n %}
-
 {% comment "text/markdown" %}
     A button with a dropdown menu next to it.
 
@@ -9,7 +8,6 @@
     - `classname` (string?) - additional component classes
     - `children` - Dropdown contents (`a` and `button` elements only)
 {% endcomment %}
-
 <div class="{% classnames 'w-dropdown-button' classname %}">
     {{ button }}
     {% if children %}
@@ -17,7 +15,7 @@
         {# Built with w-sr-only so there is no visible tooltip. #}
         {% fragment as toggle_label %}<span class="w-sr-only">{% trans "More actions" %}</span>{% endfragment %}
         {% dropdown theme="dropdown-button" toggle_label=toggle_label toggle_classname=toggle_classes toggle_icon=toggle_icon|default:"arrow-down" toggle_tooltip_offset="[0, 0]" %}
-            {{ children }}
-        {% enddropdown %}
-    {% endif %}
+        {{ children }}
+    {% enddropdown %}
+{% endif %}
 </div>

@@ -1,13 +1,9 @@
 {% load wagtailcore_tags %}
 <table>
-    {% if value.caption %}
-        <caption>{{ value.caption }}</caption>
-    {% endif %}
+    {% if value.caption %}<caption>{{ value.caption }}</caption>{% endif %}
     <thead>
         <tr>
-            {% for col in value.columns %}
-                <th scope="col">{{ col.heading }}</th>
-            {% endfor %}
+            {% for col in value.columns %}<th scope="col">{{ col.heading }}</th>{% endfor %}
         </tr>
     </thead>
     <tbody>

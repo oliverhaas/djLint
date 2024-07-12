@@ -1,28 +1,15 @@
 {% extends 'wagtailadmin/reports/base_report_results.html' %}
 {% load i18n wagtailadmin_tags %}
-
 {% block results %}
     <table class="listing">
         <thead>
             <tr>
-                <th>
-                    {% trans 'Workflow' %}
-                </th>
-                <th>
-                    {% trans 'Page/Snippet' %}
-                </th>
-                <th>
-                    {% trans 'Status' %}
-                </th>
-                <th>
-                    {% trans 'Tasks' %}
-                </th>
-                <th>
-                    {% trans 'Requested by' %}
-                </th>
-                <th>
-                    {% trans 'Started at' %}
-                </th>
+                <th>{% trans 'Workflow' %}</th>
+                <th>{% trans 'Page/Snippet' %}</th>
+                <th>{% trans 'Status' %}</th>
+                <th>{% trans 'Tasks' %}</th>
+                <th>{% trans 'Requested by' %}</th>
+                <th>{% trans 'Started at' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -32,9 +19,7 @@
                         <b>{{ workflow_state.workflow }}</b>
                     </td>
                     <td>
-                        <a href="{% admin_edit_url workflow_state.content_object %}">
-                            {% latest_str workflow_state.content_object %}
-                        </a>
+                        <a href="{% admin_edit_url workflow_state.content_object %}">{% latest_str workflow_state.content_object %}</a>
                         {% i18n_enabled as show_locale_labels %}
                         {% if show_locale_labels and workflow_state.content_object.locale_id %}
                             {% locale_label_from_id workflow_state.content_object.locale_id as locale_label %}
@@ -50,7 +35,8 @@
                         <h2>{{ workflow_name }}</h2>
                         {% trans 'Incomplete task' as incomplete_title %}
                         {% for task in workflow_state.all_tasks_with_status %}
-                            <span data-controller="w-tooltip" data-w-tooltip-content-value="{{ task.name }}: {{ task.status_display }}">
+                            <span data-controller="w-tooltip"
+                                  data-w-tooltip-content-value="{{ task.name }}: {{ task.status_display }}">
                                 {% if task.status == 'approved' %}
                                     {% icon "success" title=task.status_display classname="initial" %}
                                 {% elif task.status == 'rejected' %}
@@ -68,7 +54,6 @@
         </tbody>
     </table>
 {% endblock %}
-
 {% block no_results_message %}
     <p>{% trans "No pages/snippets have been submitted for moderation yet" %}</p>
 {% endblock %}

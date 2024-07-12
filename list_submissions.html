@@ -1,17 +1,30 @@
 {% extends "wagtailadmin/generic/index_results.html" %}
 {% load i18n %}
 {% block results %}
-    <form class="w-overflow-auto" data-controller="w-bulk" data-w-bulk-action-inactive-class="w-invisible" action="{% url 'wagtailforms:delete_submissions' form_page.id %}" method="get">
+    <form class="w-overflow-auto"
+          data-controller="w-bulk"
+          data-w-bulk-action-inactive-class="w-invisible"
+          action="{% url 'wagtailforms:delete_submissions' form_page.id %}"
+          method="get">
         <table class="listing">
             <col />
             <col />
             <col />
             <thead>
                 <tr>
-                    <th><input type="checkbox" data-action="w-bulk#toggleAll" data-w-bulk-target="all" /></th>
+                    <th>
+                        <input type="checkbox"
+                               data-action="w-bulk#toggleAll"
+                               data-w-bulk-target="all" />
+                    </th>
                     {% for heading in data_headings %}
-                        <th id="{{ heading.name }}" class="{% if heading.order %}ordered icon {% if heading.order == 'ascending' %}icon-arrow-up-after{% else %}icon-arrow-down-after{% endif %}{% endif %}">
-                            {% if heading.order %}<a href="?order_by={% if heading.order == 'ascending' %}-{% endif %}{{ heading.name }}">{{ heading.label }}</a>{% else %}{{ heading.label }}{% endif %}
+                        <th id="{{ heading.name }}"
+                            class="{% if heading.order %}ordered icon {% if heading.order == 'ascending' %}icon-arrow-up-after{% else %}icon-arrow-down-after{% endif %}{% endif %}">
+                            {% if heading.order %}
+                                <a href="?order_by={% if heading.order == 'ascending' %}-{% endif %}{{ heading.name }}">{{ heading.label }}</a>
+                            {% else %}
+                                {{ heading.label }}
+                            {% endif %}
                         </th>
                     {% endfor %}
                 </tr>
@@ -20,25 +33,23 @@
                 {% for row in data_rows %}
                     <tr>
                         <td>
-                            <input type="checkbox" name="selected-submissions" class="select-submission" value="{{ row.model_id }}" data-action="w-bulk#toggle" data-w-bulk-target="item" />
+                            <input type="checkbox"
+                                   name="selected-submissions"
+                                   class="select-submission"
+                                   value="{{ row.model_id }}"
+                                   data-action="w-bulk#toggle"
+                                   data-w-bulk-target="item" />
                         </td>
-                        {% for cell in row.fields %}
-                            <td>
-                                {{ cell }}
-                            </td>
-                        {% endfor %}
+                        {% for cell in row.fields %}<td>{{ cell }}</td>{% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <div class="nice-padding">
-            <button class="button no w-invisible" data-w-bulk-target="action">
-                {% trans "Delete selected submissions" %}
-            </button>
+            <button class="button no w-invisible" data-w-bulk-target="action">{% trans "Delete selected submissions" %}</button>
         </div>
     </form>
 {% endblock %}
-
 {% block no_results_message %}
     <p>
         {% blocktrans trimmed with title=form_page.title %}
