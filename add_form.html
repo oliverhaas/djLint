@@ -1,6 +1,5 @@
 {% extends "admin/change_form.html" %}
 {% load i18n static %}
-
 {% block form_top %}
   {% if not is_popup %}
     <p>{% translate 'First, enter a username and password. Then, you’ll be able to edit more user options.' %}</p>
@@ -10,7 +9,8 @@
 {% endblock %}
 {% block extrahead %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'admin/css/unusable_password_field.css' %}">
+  <link rel="stylesheet"
+        href="{% static 'admin/css/unusable_password_field.css' %}">
 {% endblock %}
 {% block admin_change_form_document_ready %}
   {{ block.super }}
