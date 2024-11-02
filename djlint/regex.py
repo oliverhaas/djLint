@@ -7,7 +7,20 @@ if TYPE_CHECKING:
     from typing import Any, AnyStr, Callable
 
 import re
-from re import DOTALL, IGNORECASE, MULTILINE, VERBOSE, I, M, S, X  # noqa: F401
+from re import (  # noqa: F401
+    ASCII,
+    DOTALL,
+    IGNORECASE,
+    LOCALE,
+    MULTILINE,
+    VERBOSE,
+    A,
+    I,
+    L,
+    M,
+    S,
+    X,
+)
 
 
 def search(
