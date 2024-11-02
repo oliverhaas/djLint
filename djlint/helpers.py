@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
+from .regex import search
+
 if TYPE_CHECKING:
     from typing import Final
 
@@ -41,7 +43,7 @@ def is_ignored_block_opening(config: Config, item: str) -> bool:
         )  # get the last index. The ignored opening should start after this.
 
     return bool(
-        re.search(
+        search(
             config.ignored_block_opening, item[last_index:], flags=RE_FLAGS_IX
         )
     )
@@ -64,7 +66,7 @@ def is_script_style_block_opening(config: Config, item: str) -> bool:
         )  # get the last index. The ignored opening should start after this.
 
     return bool(
-        re.search(
+        search(
             config.script_style_opening, item[last_index:], flags=RE_FLAGS_IX
         )
     )
@@ -82,7 +84,7 @@ def inside_protected_trans_block(
     False = indentable > either inside a trans trimmed block, or somewhere else, but not a trans non trimmed :)
     """
     last_index = 0
-    close_block = re.search(
+    close_block = search(
         config.ignored_trans_blocks_closing, match.group(), flags=RE_FLAGS_IX
     )
 
@@ -115,7 +117,7 @@ def inside_protected_trans_block(
             ].end()  # get the last index. The ignored opening should start after this.
 
             return bool(
-                re.search(
+                search(
                     config.ignored_trans_blocks_closing,
                     html[last_index:],
                     flags=RE_FLAGS_IX,
@@ -136,7 +138,7 @@ def inside_protected_trans_block(
     #         non_trimmed[-1].end()
     #     )  # get the last index. The ignored opening should start after this.
 
-    # return re.search(
+    # return search(
     #     config.ignored_trans_blocks_closing,
     #     html[last_index:],
     #     flags=RE_FLAGS_IX,
@@ -160,7 +162,7 @@ def is_ignored_block_closing(config: Config, item: str) -> bool:
         )  # get the last index. The ignored opening should start after this.
 
     return bool(
-        re.search(
+        search(
             config.ignored_block_closing, item[last_index:], flags=RE_FLAGS_IX
         )
     )
@@ -183,7 +185,7 @@ def is_script_style_block_closing(config: Config, item: str) -> bool:
         )  # get the last index. The ignored opening should start after this.
 
     return bool(
-        re.search(
+        search(
             config.script_style_closing, item[last_index:], flags=RE_FLAGS_IX
         )
     )
@@ -210,7 +212,7 @@ def is_safe_closing_tag(config: Config, item: str) -> bool:
         )  # get the last index. The ignored opening should start after this.
 
     return bool(
-        re.search(config.safe_closing_tag, item[last_index:], flags=RE_FLAGS_IX)
+        search(config.safe_closing_tag, item[last_index:], flags=RE_FLAGS_IX)
     )
 
 

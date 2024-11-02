@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
+from ..regex import search
+
 from ..helpers import RE_FLAGS_IMX, RE_FLAGS_IX, child_of_ignored_block
 
 if TYPE_CHECKING:
@@ -58,9 +60,9 @@ def format_template_tags(config: Config, attributes: str, spacing: int) -> str:
                     + line.strip()
                 )
 
-            elif re.search(
+            elif search(
                 config.template_indent, line.strip(), flags=RE_FLAGS_IX
-            ) and not re.search(
+            ) and not search(
                 config.template_unindent, line.strip(), flags=RE_FLAGS_IX
             ):
                 # for open tags, search, but then check that they are not closed.

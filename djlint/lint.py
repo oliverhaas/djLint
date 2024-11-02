@@ -7,6 +7,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import regex as re
+from .regex import search
 
 from .helpers import (
     inside_ignored_linter_block,
@@ -71,7 +72,7 @@ def linter(
 
     # remove ignored rules for file
     for pattern, rules in config.per_file_ignores.items():
-        if re.search(pattern, filepath, flags=re.X):
+        if search(pattern, filepath, flags=re.X):
             ignored_rules.update(x.strip() for x in rules.split(","))
 
     for rule in config.linter_rules:

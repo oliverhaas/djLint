@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
+from ..regex import search
+
 from ..helpers import (
     RE_FLAGS_IX,
     inside_ignored_linter_block,
@@ -41,7 +43,7 @@ def run(
         html,
         flags=re.X,
     ):
-        if match.group(1) and not re.search(
+        if match.group(1) and not search(
             rf"^/?{config.always_self_closing_html_tags}\b",
             match.group(1),
             flags=RE_FLAGS_IX,

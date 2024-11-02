@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
+from ..regex import search
+
 from ..helpers import (
     RE_FLAGS_IMS,
     RE_FLAGS_IMSX,
@@ -181,7 +183,7 @@ def condense_html(html: str, config: Config) -> str:
         """Check if there should be a blank line after."""
         if config.blank_line_after_tag:
             for tag in config.blank_line_after_tag.split(","):
-                if re.search(
+                if search(
                     rf"((?:{{%\s*?{tag.strip()}[^}}]+?%}}\n?)+)",
                     html,
                     flags=RE_FLAGS_IMS,
@@ -193,7 +195,7 @@ def condense_html(html: str, config: Config) -> str:
         """Check if there should be a blank line before."""
         if config.blank_line_before_tag:
             for tag in config.blank_line_before_tag.split(","):
-                if re.search(
+                if search(
                     rf"((?:{{%\s*?{tag.strip()}[^}}]+?%}}\n?)+)",
                     html,
                     flags=RE_FLAGS_IMS,

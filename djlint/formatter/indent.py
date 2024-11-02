@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 import json5 as json
 import regex as re
 
+from ..regex import search
+
 from ..helpers import (
     RE_FLAGS_IMSX,
     RE_FLAGS_IMX,
@@ -114,7 +116,7 @@ def indent_html(rawcode: str, config: Config) -> str:
 
         if (
             not is_block_raw
-            and re.search(
+            and search(
                 rf"^\s*?(?:{config.ignored_inline_blocks})",
                 item,
                 flags=RE_FLAGS_IMX,
@@ -122,7 +124,7 @@ def indent_html(rawcode: str, config: Config) -> str:
         ) or (
             not is_block_raw
             and (
-                re.search(
+                search(
                     rf"""^(?:[^<\s].*?)? # start of a line, optionally with some text
                     (?:
                         (?:<({slt_html})>)(?:.*?)(?:</(?:\1)>) # <span>stuff</span> >>>> match 1
@@ -157,7 +159,7 @@ def indent_html(rawcode: str, config: Config) -> str:
             not config.no_set_formatting
             and not is_block_raw
             and in_set_tag
-            and re.search(r"^(?!.*\{\%).*%\}.*$", item, flags=RE_FLAGS_IMX)
+            and search(r"^(?!.*\{\%).*%\}.*$", item, flags=RE_FLAGS_IMX)
         ):
             indent_level = max(indent_level - 1, 0)
             in_set_tag = False
@@ -168,7 +170,7 @@ def indent_html(rawcode: str, config: Config) -> str:
             not config.no_set_formatting
             and not is_block_raw
             and in_set_tag
-            and re.search(r"^[ ]*}|^[ ]*]", item, flags=RE_FLAGS_IMX)
+            and search(r"^[ ]*}|^[ ]*]", item, flags=RE_FLAGS_IMX)
         ):
             indent_level = max(indent_level - 1, 0)
             tmp = (indent * indent_level) + item + "\n"
@@ -177,23 +179,23 @@ def indent_html(rawcode: str, config: Config) -> str:
         elif (
             not is_block_raw
             and not is_safe_closing_tag_
-            and re.search(config.tag_unindent, item, flags=RE_FLAGS_IMX)
+            and search(config.tag_unindent, item, flags=RE_FLAGS_IMX)
             # and not ending in a slt like <span><strong></strong>.
-            and not re.search(
+            and not search(
                 rf"(<({slt_html})>)(.*?)(</(\2)>[^<]*?$)",
                 item,
                 flags=RE_FLAGS_IMX,
             )
-            and not re.search(
+            and not search(
                 rf"(<({slt_html})\\b[^>]+?>)(.*?)(</(\2)>[^<]*?$)",
                 item,
                 flags=RE_FLAGS_IMX,
             )
         ):
             # block to catch inline block followed by a non-break tag
-            if re.search(
+            if search(
                 rf"(^<({slt_html})>)(.*?)(</(\2)>)", item, flags=RE_FLAGS_IMX
-            ) or re.search(
+            ) or search(
                 rf"(^<({slt_html})\b[^>]+?>)(.*?)(</(\2)>)",
                 item,
                 flags=RE_FLAGS_IMX,
@@ -205,7 +207,7 @@ def indent_html(rawcode: str, config: Config) -> str:
                 indent_level = max(indent_level - 1, 0)
                 tmp = (indent * indent_level) + item + "\n"
 
-        elif not is_block_raw and re.search(
+        elif not is_block_raw and search(
             r"^" + str(config.tag_unindent_line), item, flags=RE_FLAGS_IMX
         ):
             tmp = (indent * (indent_level - 1)) + item + "\n"
@@ -217,7 +219,7 @@ def indent_html(rawcode: str, config: Config) -> str:
             not config.no_set_formatting
             and not is_block_raw
             and not in_set_tag
-            and re.search(
+            and search(
                 r"^([ ]*{%[ ]*?set)(?!.*%}).*$", item, flags=RE_FLAGS_IMX
             )
         ):
@@ -230,13 +232,13 @@ def indent_html(rawcode: str, config: Config) -> str:
             not config.no_set_formatting
             and not is_block_raw
             and in_set_tag
-            and re.search(
+            and search(
                 r"(\{(?![^{}]*%[}\s])(?=[^{}]*$)|\[(?=[^\]]*$))",
                 item,
                 flags=RE_FLAGS_IMX,
             )
         ) or (
-            re.search(
+            search(
                 r"^(?:" + str(config.tag_indent) + r")",
                 item,
                 flags=RE_FLAGS_IMX,

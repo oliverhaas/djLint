@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
+from ..regex import search
+
 from ..helpers import (
     RE_FLAGS_IMX,
     RE_FLAGS_IX,
@@ -81,7 +83,7 @@ def expand_html(html: str, config: Config) -> str:
         if inside_ignored_block(config, html, match):
             return match.group(1)
 
-        if not re.search(
+        if not search(
             r"\<(?:"
             + str(config.indent_html_tags)
             # added > as not allowed inside a "" or '' to prevent invalid wild html matches
