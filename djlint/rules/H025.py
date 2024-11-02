@@ -6,7 +6,7 @@ import copy
 from itertools import chain
 from typing import TYPE_CHECKING
 
-import ..regex as re
+from .. import regex as re
 
 from ..helpers import (
     RE_FLAGS_IX,
