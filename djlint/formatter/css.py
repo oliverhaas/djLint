@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import cssbeautifier
 import regex as re
+from ..regex import sub
 from jsbeautifier.javascript.options import BeautifierOptions
 
 from ..helpers import RE_FLAGS_IS, child_of_unformatted_block
@@ -60,7 +61,7 @@ def format_css(html: str, config: Config) -> str:
 
     func = partial(launch_formatter, config, html)
 
-    return re.sub(
+    return sub(
         r"([ ]*?)(<(?:style)\b(?:\"[^\"]*\"|'[^']*'|{[^}]*}|[^'\">{}])*>)(.*?)(?=</style>)",
         func,
         html,

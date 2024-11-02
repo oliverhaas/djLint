@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
-from ..regex import search, match, finditer
+from ..regex import search, match, finditer, sub
 
 from ..helpers import RE_FLAGS_IMX, RE_FLAGS_IX, child_of_ignored_block
 
@@ -99,7 +99,7 @@ def format_template_tags(config: Config, attributes: str, spacing: int) -> str:
 
     func = partial(add_break, "before")
 
-    attributes = re.sub(
+    attributes = sub(
         break_char
         + r".\K((?:{%|{{\#)[ ]*?(?:"
         + config.break_template_tags
@@ -111,7 +111,7 @@ def format_template_tags(config: Config, attributes: str, spacing: int) -> str:
 
     func = partial(add_break, "after")
     # break after
-    attributes = re.sub(
+    attributes = sub(
         r"((?:{%|{{\#)[ ]*?(?:"
         + config.break_template_tags
         + ")[^}]+?[%|}]})([^\n]+)$",

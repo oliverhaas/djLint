@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import regex as re
+from .regex import sub
 from click import echo
 from colorama import Fore, Style
 
@@ -148,7 +149,7 @@ def build_output(
         message = message_dict["message"]
         match = (
             Fore.BLUE
-            + re.sub(r"\s{2,}|\n", " ", message_dict["match"])
+            + sub(r"\s{2,}|\n", " ", message_dict["match"])
             + Style.RESET_ALL
         )
 

@@ -27,6 +27,12 @@ def match(regex, text, use_cache: bool = True, flags=None, **kwargs):
     return re.match(regex, text, flags=flags, **kwargs)
 
 
+def sub(regex, repl, text, use_cache: bool = True, flags=None, **kwargs):
+    if use_cache:
+        re_compiled = _compile_cached(regex, flags=flags)
+        return re_compiled.sub(repl, text, **kwargs)
+    return re.sub(regex, repl, text, flags=flags, **kwargs)
+
 @lru_cache(maxsize=256)
 def _compile_cached(regex, flags=None) -> re.Pattern:
     return re.compile(regex, flags=flags)

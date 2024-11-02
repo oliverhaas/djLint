@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
-from ..regex import search
+from ..regex import search, sub
 
 from ..helpers import (
     RE_FLAGS_IMX,
@@ -60,7 +60,7 @@ def expand_html(html: str, config: Config) -> str:
     break_char = config.break_before
 
     # html tags - break before
-    html = re.sub(
+    html = sub(
         rf"{break_char}\K(</?(?:{html_tags})\b(\"[^\"]*\"|'[^']*'|{{[^}}]*}}|[^'\">{{}}])*>)",
         add_left,
         html,
@@ -68,7 +68,7 @@ def expand_html(html: str, config: Config) -> str:
     )
 
     # html tags - break after
-    html = re.sub(
+    html = sub(
         rf"(</?(?:{html_tags})\b(\"[^\"]*\"|'[^']*'|{{[^}}]*}}|[^'\">{{}}])*>)(?!\s*?\n)(?=[^\n])",
         add_right,
         html,
@@ -102,7 +102,7 @@ def expand_html(html: str, config: Config) -> str:
 
     # template tags
     # break before
-    html = re.sub(
+    html = sub(
         break_char
         + r"\K((?:{%|{{\#)[ ]*?(?:"
         + config.break_template_tags
@@ -113,7 +113,7 @@ def expand_html(html: str, config: Config) -> str:
     )
 
     # break after
-    return re.sub(
+    return sub(
         r"((?:{%|{{\#)[ ]*?(?:"
         + config.break_template_tags
         + ")[^}]+?[%}]})(?=[^\n])",

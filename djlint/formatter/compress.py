@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import regex as re
+from ..regex import sub
 
 from ..const import HTML_TAG_NAMES, HTML_VOID_ELEMENTS
 from ..helpers import RE_FLAGS_IMX, child_of_unformatted_block
@@ -64,4 +65,4 @@ def compress_html(html: str, config: Config) -> str:
 
         return f"{open_bracket}{tag}{attributes}{close_bracket}"
 
-    return re.sub(config.html_tag_regex, _clean_tag, html, flags=RE_FLAGS_IMX)
+    return sub(config.html_tag_regex, _clean_tag, html, flags=RE_FLAGS_IMX)

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 import json5 as json
 import regex as re
 
-from ..regex import search, finditer
+from ..regex import search, finditer, sub
 
 from ..helpers import (
     RE_FLAGS_IMSX,
@@ -47,11 +47,11 @@ def indent_html(rawcode: str, config: Config) -> str:
         """
         func = partial(fix_tag_spacing, rawcode)
 
-        rawcode = re.sub(
+        rawcode = sub(
             r"({%-?\+?)[ ]*?(\w(?:(?!%}).)*?)[ ]*?(\+?-?%})", func, rawcode
         )
 
-        rawcode = re.sub(
+        rawcode = sub(
             r"({{)[ ]*?(\w(?:(?!}}).)*?)[ ]*?(\+?-?}})", func, rawcode
         )
 
@@ -67,7 +67,7 @@ def indent_html(rawcode: str, config: Config) -> str:
 
         func = partial(fix_handlebars_template_tags, rawcode)
         # handlebars templates
-        rawcode = re.sub(r"({{#(?:each|if).+?[^ ])(}})", func, rawcode)
+        rawcode = sub(r"({{#(?:each|if).+?[^ ])(}})", func, rawcode)
 
     rawcode_flat_list = re.split("\n", rawcode)
 
@@ -274,7 +274,7 @@ def indent_html(rawcode: str, config: Config) -> str:
 
             func = partial(format_attributes, config, item)
 
-            tmp = re.sub(
+            tmp = sub(
                 rf"(\s*?)(<(?:{config.indent_html_tags}))\s((?:\"[^\"]*\"|'[^']*'|{{[^}}]*}}|[^'\">{{}}\/])+?)(\s?/?>)",
                 func,
                 tmp,
@@ -415,7 +415,7 @@ def indent_html(rawcode: str, config: Config) -> str:
 
             if outer_quotes is not None and inner_quotes is not None:
                 # Replace all content inner quotes and remove trailing/leading spaces
-                cleaned_contents = re.sub(
+                cleaned_contents = sub(
                     rf"(?<=\{re.escape(outer_quotes)})\s+|\s+(?=\{re.escape(outer_quotes)})",
                     "",
                     contents.replace(outer_quotes, inner_quotes),
@@ -430,7 +430,7 @@ def indent_html(rawcode: str, config: Config) -> str:
     if not config.no_set_formatting:
         func = partial(format_set, config, beautified_code)
         # format set contents
-        beautified_code = re.sub(
+        beautified_code = sub(
             r"([ ]*)({%-?)[ ]*(set)[ ]+?((?:(?!%}).)*?)(-?%})",
             func,
             beautified_code,
@@ -440,7 +440,7 @@ def indent_html(rawcode: str, config: Config) -> str:
     if not config.no_function_formatting:
         func = partial(format_function, config, beautified_code)
         # format function contents
-        beautified_code = re.sub(
+        beautified_code = sub(
             r"([ ]*)({{-?\+?)[ ]*?((?:(?!}}).)*?\w)(\((?:\"[^\"]*\"|'[^']*'|[^\)])*?\)[ ]*)((?:\[[^\]]*?\]|\.[^\s]+)[ ]*)?((?:(?!}}).)*?-?\+?}})",
             func,
             beautified_code,

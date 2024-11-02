@@ -9,6 +9,7 @@ import jsbeautifier
 import regex as re
 from jsbeautifier.javascript.options import BeautifierOptions
 
+from ..regex import sub
 from ..helpers import RE_FLAGS_IS, child_of_unformatted_block
 
 if TYPE_CHECKING:
@@ -60,7 +61,7 @@ def format_js(html: str, config: Config) -> str:
 
     func = partial(launch_formatter, config, html)
 
-    return re.sub(
+    return sub(
         r"([ ]*?)(<(?:script)\b(?:\"[^\"]*\"|'[^']*'|{[^}]*}|[^'\">{}])*>)(.*?)(?=</script>)",
         func,
         html,

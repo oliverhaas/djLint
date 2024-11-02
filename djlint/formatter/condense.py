@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
-from ..regex import search, match, finditer
+from ..regex import search, match, finditer, sub
 
 from ..helpers import (
     RE_FLAGS_IMS,
@@ -64,7 +64,7 @@ def clean_whitespace(html: str, config: Config) -> str:
 
     if not config.preserve_leading_space:
         # remove any leading/trailing space
-        html = re.sub(
+        html = sub(
             rf"^[ \t]*{line_contents}([{trailing_contents}]*)$",
             func,
             html,
@@ -74,13 +74,13 @@ def clean_whitespace(html: str, config: Config) -> str:
     else:
         # only remove leading space in front of tags
         # <, {%
-        html = re.sub(
+        html = sub(
             rf"^[ \t]*((?:<|{{%).*?)([{trailing_contents}]*)$",
             func,
             html,
             flags=re.M,
         )
-        html = re.sub(
+        html = sub(
             rf"^{line_contents}([{trailing_contents}]*)$",
             func,
             html,
@@ -105,7 +105,7 @@ def clean_whitespace(html: str, config: Config) -> str:
     # should we add blank lines after load tags?
     if config.blank_line_after_tag:
         for tag in config.blank_line_after_tag.split(","):
-            html = re.sub(
+            html = sub(
                 rf"((?:{{%\s*?{tag.strip()}\b[^}}]+?%}}\n?)+)",
                 func,
                 html,
@@ -126,7 +126,7 @@ def clean_whitespace(html: str, config: Config) -> str:
     # should we add blank lines before load tags?
     if config.blank_line_before_tag:
         for tag in config.blank_line_before_tag.split(","):
-            html = re.sub(
+            html = sub(
                 rf"(?<!^\n)((?:{{%\s*?{tag.strip()}\b[^}}]+?%}}\n?)+)",
                 func,
                 html,
@@ -145,7 +145,7 @@ def clean_whitespace(html: str, config: Config) -> str:
 
     if not config.no_line_after_yaml:
         func = partial(yaml_add_blank_line_after, html)
-        html = re.sub(r"(^---.+?---)$", func, html, flags=RE_FLAGS_MS)
+        html = sub(r"(^---.+?---)$", func, html, flags=RE_FLAGS_MS)
 
     return html
 
@@ -207,7 +207,7 @@ def condense_html(html: str, config: Config) -> str:
     func = partial(condense_line, config, html)
 
     # put short single line tags on one line
-    html = re.sub(
+    html = sub(
         rf"(<({config.optional_single_line_html_tags})\b(?:\"[^\"]*\"|'[^']*'|{{[^}}]*}}|[^'\">{{}}])*>)\s*([^<\n]*?)\s*?(</(\2)>)",
         func,
         html,
@@ -216,7 +216,7 @@ def condense_html(html: str, config: Config) -> str:
 
     # put short template tags back on one line. must have leading space
     # jinja +%} and {%+ intentionally omitted.
-    return re.sub(
+    return sub(
         rf"((?:\s|^){{%-?[ ]*?({config.optional_single_line_template_tags})\b(?:(?!\n|%}}).)*?%}})\s*([^%\n]*?)\s*?({{%-?[ ]+?end(\2)[ ]*?%}})",
         func,
         html,
