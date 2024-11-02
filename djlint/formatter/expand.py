@@ -9,7 +9,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-import regex as re
+import ..regex as re
 
 from ..helpers import (
     RE_FLAGS_IMX,

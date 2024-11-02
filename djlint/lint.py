@@ -6,7 +6,7 @@ import importlib
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-import regex as re
+import .regex as re
 
 from .helpers import (
     inside_ignored_linter_block,

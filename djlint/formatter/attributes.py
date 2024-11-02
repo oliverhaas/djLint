@@ -5,7 +5,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-import regex as re
+import ..regex as re
 
 from ..helpers import RE_FLAGS_IMX, RE_FLAGS_IX, child_of_ignored_block
 
