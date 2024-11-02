@@ -8,7 +8,7 @@ import regex as re
 from click import echo
 from colorama import Fore
 
-from .regex import search
+from .regex import search, match, finditer
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -94,6 +94,6 @@ def no_pragma(config: Config, this_file: Path) -> bool:
     }
 
     for pattern in pragma_patterns[config.profile]:
-        if re.match(pattern, first_line):
+        if match(pattern, first_line):
             return True
     return False

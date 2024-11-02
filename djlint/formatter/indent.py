@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 import json5 as json
 import regex as re
 
-from ..regex import search
+from ..regex import search, finditer
 
 from ..helpers import (
     RE_FLAGS_IMSX,
@@ -295,7 +295,7 @@ def indent_html(rawcode: str, config: Config) -> str:
 
         # detect the outer quotes for jinja
         if config.profile == "jinja":
-            for match in re.finditer(
+            for match in finditer(
                 r"=([\"'])(\{\{[\s\S]*?\}\})\1", tmp, flags=re.M
             ):
                 outer_quotes = match.group(1)

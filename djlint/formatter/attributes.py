@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
-from ..regex import search
+from ..regex import search, match, finditer
 
 from ..helpers import RE_FLAGS_IMX, RE_FLAGS_IX, child_of_ignored_block
 
@@ -40,7 +40,7 @@ def format_template_tags(config: Config, attributes: str, spacing: int) -> str:
 
         for line_number, line in enumerate(attributes.splitlines()):
             # when checking for template tag, use "match" to force start of line check.
-            if re.match(
+            if match(
                 config.template_unindent, line.strip(), flags=RE_FLAGS_IX
             ):
                 indent -= 1
@@ -50,7 +50,7 @@ def format_template_tags(config: Config, attributes: str, spacing: int) -> str:
                     + line.strip()
                 )
 
-            elif re.match(
+            elif match(
                 config.tag_unindent_line, line.strip(), flags=RE_FLAGS_IX
             ):
                 # if we are leaving an indented group, then remove the indent_adder
@@ -141,7 +141,7 @@ def format_attributes(config: Config, html: str, match: re.Match[str]) -> str:
     attributes = []
 
     # format attributes as groups
-    for attr_grp in re.finditer(
+    for attr_grp in finditer(
         config.attribute_pattern, match.group(3).strip(), flags=re.X
     ):
         attrib_name = attr_grp.group(1)

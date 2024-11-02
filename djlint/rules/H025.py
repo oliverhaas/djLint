@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
-from ..regex import search
+from ..regex import search, finditer
 
 from ..helpers import (
     RE_FLAGS_IX,
@@ -38,7 +38,7 @@ def run(
     open_tags: list[re.Match[str]] = []
     orphan_tags: list[re.Match[str]] = []
 
-    for match in re.finditer(
+    for match in finditer(
         r"<(/?(\w+))\s*(" + config.attribute_pattern + r"|\s*)*\s*?>",
         html,
         flags=re.X,

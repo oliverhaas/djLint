@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import regex as re
 
-from .regex import search
+from .regex import search, match, finditer
 
 if TYPE_CHECKING:
     from typing import Final
@@ -34,7 +34,7 @@ def is_ignored_block_opening(config: Config, item: str) -> bool:
     """
     last_index = 0
     inline = tuple(
-        re.finditer(config.ignored_blocks_inline, item, flags=RE_FLAGS_IMSX)
+        finditer(config.ignored_blocks_inline, item, flags=RE_FLAGS_IMSX)
     )
 
     if inline:
@@ -57,7 +57,7 @@ def is_script_style_block_opening(config: Config, item: str) -> bool:
     """
     last_index = 0
     inline = tuple(
-        re.finditer(config.script_style_inline, item, flags=RE_FLAGS_IMSX)
+        finditer(config.script_style_inline, item, flags=RE_FLAGS_IMSX)
     )
 
     if inline:
@@ -92,11 +92,11 @@ def inside_protected_trans_block(
         return False
 
     non_trimmed = tuple(
-        re.finditer(config.ignored_trans_blocks, html, flags=RE_FLAGS_ISX)
+        finditer(config.ignored_trans_blocks, html, flags=RE_FLAGS_ISX)
     )
 
     trimmed = tuple(
-        re.finditer(config.trans_trimmed_blocks, html, flags=RE_FLAGS_ISX)
+        finditer(config.trans_trimmed_blocks, html, flags=RE_FLAGS_ISX)
     )
 
     # who is max?
@@ -106,7 +106,7 @@ def inside_protected_trans_block(
         # non trimmed!
         # check that this is not an inline block.
         non_trimmed_inline = any(
-            re.finditer(
+            finditer(
                 config.ignored_trans_blocks, match.group(), flags=RE_FLAGS_ISX
             )
         )
@@ -153,7 +153,7 @@ def is_ignored_block_closing(config: Config, item: str) -> bool:
     """
     last_index = 0
     inline = tuple(
-        re.finditer(config.ignored_inline_blocks, item, flags=RE_FLAGS_IX)
+        finditer(config.ignored_inline_blocks, item, flags=RE_FLAGS_IX)
     )
 
     if inline:
@@ -176,7 +176,7 @@ def is_script_style_block_closing(config: Config, item: str) -> bool:
     """
     last_index = 0
     inline = tuple(
-        re.finditer(config.script_style_inline, item, flags=RE_FLAGS_IX)
+        finditer(config.script_style_inline, item, flags=RE_FLAGS_IX)
     )
 
     if inline:
@@ -199,7 +199,7 @@ def is_safe_closing_tag(config: Config, item: str) -> bool:
     """
     last_index = 0
     inline = tuple(
-        re.finditer(
+        finditer(
             config.ignored_inline_blocks + r" | " + config.ignored_blocks,
             item,
             flags=RE_FLAGS_IMSX,
@@ -222,7 +222,7 @@ def inside_template_block(
     """Check if a re.Match is inside of a template block."""
     match_start = match.start()
     match_end = match.end(0)
-    for ignored_match in re.finditer(
+    for ignored_match in finditer(
         config.template_blocks, html, flags=RE_FLAGS_IMSX
     ):
         if (
@@ -239,7 +239,7 @@ def inside_html_attribute(
     """Check if a re.Match is inside of an html attribute."""
     match_start = match.start()
     match_end = match.end(0)
-    for ignored_match in re.finditer(
+    for ignored_match in finditer(
         config.html_tag_regex, html, flags=RE_FLAGS_IMSX
     ):
         # group 3 are the attributes
@@ -256,7 +256,7 @@ def inside_ignored_linter_block(
     """Check if a re.Match is inside of a ignored linter block."""
     match_start = match.start()
     match_end = match.end(0)
-    for ignored_match in re.finditer(
+    for ignored_match in finditer(
         config.ignored_linter_blocks, html, flags=RE_FLAGS_IMSX
     ):
         if (
@@ -274,8 +274,8 @@ def _inside_ignored_block(
     return tuple(
         (x.start(0), x.end())
         for x in itertools.chain(
-            re.finditer(ignored_blocks, html, flags=RE_FLAGS_IMSX),
-            re.finditer(ignored_inline_blocks, html, flags=RE_FLAGS_IX),
+            finditer(ignored_blocks, html, flags=RE_FLAGS_IMSX),
+            finditer(ignored_inline_blocks, html, flags=RE_FLAGS_IX),
         )
     )
 
@@ -305,7 +305,7 @@ def _child_of_unformatted_block(
 ) -> tuple[tuple[int, int], ...]:
     return tuple(
         (x.start(0), x.end())
-        for x in re.finditer(unformatted_blocks, html, flags=RE_FLAGS_IMSX)
+        for x in finditer(unformatted_blocks, html, flags=RE_FLAGS_IMSX)
     )
 
 
@@ -330,8 +330,8 @@ def child_of_ignored_block(
     match_start = match.start()
     match_end = match.end(0)
     for ignored_match in itertools.chain(
-        re.finditer(config.ignored_blocks, html, flags=RE_FLAGS_IMSX),
-        re.finditer(config.ignored_inline_blocks, html, flags=RE_FLAGS_IX),
+        finditer(config.ignored_blocks, html, flags=RE_FLAGS_IMSX),
+        finditer(config.ignored_inline_blocks, html, flags=RE_FLAGS_IX),
     ):
         if (
             ignored_match.start(0) < match_start
@@ -349,8 +349,8 @@ def overlaps_ignored_block(
     match_end = match.end()
 
     for ignored_match in itertools.chain(
-        re.finditer(config.ignored_blocks, html, flags=RE_FLAGS_IMSX),
-        re.finditer(config.ignored_inline_blocks, html, flags=RE_FLAGS_IX),
+        finditer(config.ignored_blocks, html, flags=RE_FLAGS_IMSX),
+        finditer(config.ignored_inline_blocks, html, flags=RE_FLAGS_IX),
     ):
         # don't require the match to be fully inside the ignored block.
         # poorly build html will probably span ignored blocks and should be ignored.
@@ -369,7 +369,7 @@ def inside_ignored_rule(
     match_end = match.end()
 
     for rule_regex in config.ignored_rules:
-        for ignored_match in re.finditer(rule_regex, html, flags=RE_FLAGS_ISX):
+        for ignored_match in finditer(rule_regex, html, flags=RE_FLAGS_ISX):
             if (
                 rule in re.split(r"\s|,", ignored_match.group(1).strip())
                 and (

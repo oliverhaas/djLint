@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import regex as re
-from .regex import search
+from .regex import search, match, finditer
 
 from .helpers import (
     inside_ignored_linter_block,
@@ -65,7 +65,7 @@ def linter(
     # build list of line ends for file
     line_ends = [
         {"start": m.start(), "end": m.end()}
-        for m in re.finditer(r"(?:.*\n)|(?:[^\n]+$)", html)
+        for m in finditer(r"(?:.*\n)|(?:[^\n]+$)", html)
     ]
 
     ignored_rules: set[str] = set()
@@ -103,7 +103,7 @@ def linter(
         # rule based on patterns
         else:
             for pattern in rule["patterns"]:
-                for match in re.finditer(
+                for match in finditer(
                     pattern, html, flags=build_flags(rule.get("flags", "re.S"))
                 ):
                     if (
