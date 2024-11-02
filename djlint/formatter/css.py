@@ -6,7 +6,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 import cssbeautifier
-import regex as re
+import re
 from jsbeautifier.javascript.options import BeautifierOptions
 
 from ..helpers import RE_FLAGS_IS, child_of_unformatted_block

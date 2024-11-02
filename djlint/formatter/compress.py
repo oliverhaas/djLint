@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import regex as re
+import re
 
 from ..const import HTML_TAG_NAMES, HTML_VOID_ELEMENTS
 from ..helpers import RE_FLAGS_IMX, child_of_unformatted_block

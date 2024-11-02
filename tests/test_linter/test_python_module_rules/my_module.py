@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import regex as re
+import re
 
 from djlint.lint import get_line
 

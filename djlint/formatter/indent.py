@@ -6,7 +6,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 import json5 as json
-import regex as re
+import re
 
 from ..helpers import (
     RE_FLAGS_IMSX,

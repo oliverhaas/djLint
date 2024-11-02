@@ -7,7 +7,7 @@ import itertools
 from functools import cache
 from typing import TYPE_CHECKING
 
-import regex as re
+import re
 
 if TYPE_CHECKING:
     from typing import Final

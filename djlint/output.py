@@ -9,7 +9,7 @@ from collections import Counter
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import regex as re
+import re
 from click import echo
 from colorama import Fore, Style
 
