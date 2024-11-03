@@ -301,6 +301,8 @@ def inside_ignored_block(
 def _child_of_unformatted_block(
     html: str, /, *, unformatted_blocks: str
 ) -> tuple[tuple[int, int], ...]:
+    if not re.search(r"""djlint\:\s*off""", html):
+        return ()
     return tuple(
         (x.start(0), x.end())
         for x in re.finditer(unformatted_blocks, html, flags=RE_FLAGS_IMSX)
