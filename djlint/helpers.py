@@ -301,8 +301,7 @@ def inside_ignored_block(
 def _child_of_unformatted_block(
     html: str, /, *, unformatted_blocks: str
 ) -> tuple[tuple[int, int], ...]:
-    # if not re.search(r"""djlint\:\s*off""", html):
-    #     return ()
+
     return tuple(
         (x.start(0), x.end())
         for x in re.finditer(unformatted_blocks, html, flags=RE_FLAGS_IMSX)
@@ -313,6 +312,8 @@ def child_of_unformatted_block(
     config: Config, html: str, match: re.Match[str]
 ) -> bool:
     """Do not add whitespace if the tag is in a non indent block."""
+    if not re.search(r"""djlint\:\s*off""", html):
+        return False
     match_start = match.start()
     match_end = match.end(0)
     for ignored_match_start, ignored_match_end in _child_of_unformatted_block(
