@@ -331,6 +331,19 @@ def child_of_unformatted_block(
     return False
 
 
+def should_skip_compression(config: Config, match: re.Match[str]) -> bool:
+    """Check if tag should skip compression based on no_compression config."""
+    if not hasattr(config, "no_compression") or not config.no_compression:
+        return False
+
+    # Check if the entire tag matches any no_compression pattern
+    tag_content = match.group()
+    for pattern in config.no_compression:
+        if re.search(pattern, tag_content, flags=RE_FLAGS_IMX):
+            return True
+    return False
+
+
 def child_of_ignored_block(
     config: Config, html: str, match: re.Match[str]
 ) -> bool:

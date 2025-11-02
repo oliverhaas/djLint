@@ -397,6 +397,19 @@ class Config:
             )
         )
 
+        # Configure patterns for tags that should skip compression
+        self.no_compression: list[str] = []
+        if self.format_attribute_js_json:
+            # Skip compression for tags with multiline JS attributes
+            js_attr_names = js_pattern_string.replace(r"^(?:", "").replace(
+                r")$", ""
+            )
+            js_pattern = (
+                rf"<[^>]*?(?:{js_attr_names})\s*=\s*"
+                r'(?:"[^"]*"|\'[^\']*\')[^>]*?>'
+            )
+            self.no_compression.append(js_pattern)
+
         self.preserve_leading_space: bool = (
             preserve_leading_space
             or djlint_settings.get("preserve_leading_space", False)

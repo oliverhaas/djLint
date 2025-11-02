@@ -274,6 +274,26 @@ test_data = [
         }),
         id="js_continuation_line_indentation",
     ),
+    pytest.param(
+        ('<div onclick="func();\nnextFunc();">Test</div>'),
+        ('<div onclick="func();\n    nextFunc();">Test</div>\n'),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="js_newline_without_comment_preserves_newline",
+    ),
+    pytest.param(
+        ('<div onclick="func(); // comment\nnextFunc();">Test</div>'),
+        ('<div onclick="func(); // comment\n    nextFunc();">Test</div>\n'),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="js_comment_followed_by_code_preserves_newline",
+    ),
 ]
 
 
