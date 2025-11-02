@@ -16,6 +16,35 @@ if TYPE_CHECKING:
     from djlint.settings import Config
 
 
+def replace_template_tags_with_placeholders(
+    config: Config, value: str
+) -> tuple[str, dict[str, str]]:
+    """Replace template tags with placeholders for JS formatting."""
+    template_pattern = re.compile(config.template_tags, RE_FLAGS_IX)
+    placeholders: dict[str, str] = {}
+    counter = 0
+
+    def replacer(match: re.Match[str]) -> str:
+        nonlocal counter
+        placeholder = f"__TEMPLATE_TAG_{counter}__"
+        placeholders[placeholder] = match.group(0)
+        counter += 1
+        return placeholder
+
+    modified_value = template_pattern.sub(replacer, value)
+    return modified_value, placeholders
+
+
+def restore_template_tags_from_placeholders(
+    value: str, placeholders: dict[str, str]
+) -> str:
+    """Restore original template tags from placeholders after JS formatting."""
+    result = value
+    for placeholder, original in placeholders.items():
+        result = result.replace(placeholder, original)
+    return result
+
+
 def count_object_properties(config: Config, value: str) -> int:
     """Count the number of properties in a JSON/JS object."""
     try:
@@ -47,87 +76,75 @@ def format_json_with_indent(
     config: Config, value: str, base_indent: str
 ) -> str:
     """Format JSON with proper HTML-relative indentation."""
+    # Handle template tags by replacing them with placeholders
+    json_value, placeholders = replace_template_tags_with_placeholders(
+        config, value
+    )
+
     try:
-        data = json.loads(value)
+        data = json.loads(json_value)
     except json.JSONDecodeError:
         return value
     else:
         # Use indent_size from config for JSON formatting
         indent_size = config.js_config.get("indent_size", 4)
         formatted = json.dumps(data, indent=indent_size)
-        # Add base_indent to each line (except first)
+        # Add base indentation to continuation lines
         lines = formatted.split("\n")
         if len(lines) > 1:
-            indented_lines = [lines[0]]
-            for i, line in enumerate(lines[1:], 1):
-                if i == len(lines) - 1:  # Last line (closing brace)
-                    # Indent closing brace indent_size spaces less than properties
-                    # Content lines get: base_indent + json_indent_size
-                    # Closing should get: base_indent + json_indent_size - indent_size
-                    content_indent = base_indent + (" " * indent_size)
-                    if len(content_indent) >= indent_size:
-                        closing_indent = content_indent[
-                            :-indent_size
-                        ]  # Remove indent_size spaces from content indent
-                    else:
-                        closing_indent = base_indent  # Fallback to base_indent
-                    indented_lines.append(closing_indent + line)
-                else:
-                    indented_lines.append(base_indent + line)
-            return "\n".join(indented_lines)
-        return formatted
+            indented_lines = [lines[0]]  # First line stays as-is
+            indented_lines.extend(base_indent + line for line in lines[1:])
+            result = "\n".join(indented_lines)
+        else:
+            result = formatted
+
+        # Restore template tags if they were replaced
+        if placeholders:
+            result = restore_template_tags_from_placeholders(
+                result, placeholders
+            )
+
+        return result
 
 
 def format_js_with_indent(config: Config, value: str, base_indent: str) -> str:
     """Format JavaScript code/object with proper HTML-relative indentation."""
+    # Handle template tags by replacing them with placeholders
+    js_value, placeholders = replace_template_tags_with_placeholders(
+        config, value
+    )
+
+    # Strip whitespace for consistent jsbeautifier behavior
+    js_value = js_value.strip()
+
     try:
         # Use the same JS config as the main JS formatter
         js_config = dict(config.js_config)
         js_config["indent_level"] = 0  # No extra indentation from jsbeautifier
+        js_config["indent_with_tabs"] = False  # Force space indentation
+        js_config["indent_size"] = config.js_config.get("indent_size", 2)
 
         opts = BeautifierOptions(js_config)
-        formatted: str = jsbeautifier.beautify(value, opts)
-    except (jsbeautifier.BeautifierError, ValueError):
+        formatted: str = jsbeautifier.beautify(js_value, opts)
+    except (ValueError, Exception):
         return value
     else:
-        # Add base_indent to each line while preserving relative indentation
+        # Add base indentation to continuation lines
         lines = formatted.split("\n")
         if len(lines) > 1:
-            indented_lines = [
-                lines[0].strip()
-            ]  # Remove jsbeautifier's indentation from first line
+            indented_lines = [lines[0]]  # First line stays as-is
+            indented_lines.extend(base_indent + line for line in lines[1:])
+            result = "\n".join(indented_lines)
+        else:
+            result = formatted
 
-            for i, line in enumerate(lines[1:], 1):
-                if not line.strip():  # Handle empty lines
-                    indented_lines.append("")
-                    continue
+        # Restore template tags if they were replaced
+        if placeholders:
+            result = restore_template_tags_from_placeholders(
+                result, placeholders
+            )
 
-                # Preserve the original jsbeautifier indentation structure
-                line_indent = len(line) - len(line.lstrip())
-
-                # Check if this is an object (starts and ends with braces)
-                is_object = value.strip().startswith(
-                    "{"
-                ) and value.strip().endswith("}")
-
-                if (
-                    is_object and i == len(lines) - 1
-                ):  # Last line of object (closing brace)
-                    # Indent closing brace 2 spaces less than properties for objects
-                    # jsbeautifier already provides the correct line_indent difference
-                    # Content lines get: base_indent + (" " * line_indent_for_content) (e.g., 14 + 2 = 16)
-                    # Closing line gets: base_indent + (" " * line_indent_for_closing) (e.g., 14 + 0 = 14)
-                    # This naturally creates the 2-space difference we want
-                    indented_lines.append(
-                        base_indent + (" " * line_indent) + line.strip()
-                    )
-                else:
-                    # For general JS code or object properties, use full base_indent + jsbeautifier indent
-                    indented_lines.append(
-                        base_indent + (" " * line_indent) + line.strip()
-                    )
-            return "\n".join(indented_lines)
-        return formatted
+        return result
 
 
 def format_template_tags(config: Config, attributes: str, spacing: int) -> str:
@@ -348,8 +365,7 @@ def format_attributes(config: Config, html: str, match: re.Match[str]) -> str:
                     else:
                         # Calculate proper base indentation for JavaScript objects
                         js_base_indent = (
-                            spacing
-                            + (quote_length + len(attrib_name or "")) * " "
+                            spacing + (len(attrib_name or "") + 2) * " "
                         )
                         # Format JavaScript objects
                         attrib_value = format_js_with_indent(
@@ -359,7 +375,7 @@ def format_attributes(config: Config, html: str, match: re.Match[str]) -> str:
                 # Format general JavaScript code (non-objects)
                 # Calculate base indentation for general JS code
                 js_code_base_indent = (
-                    spacing + (quote_length + len(attrib_name or "")) * " "
+                    spacing + (len(attrib_name or "") + 2) * " "
                 )
                 attrib_value = format_js_with_indent(
                     config, attrib_value, js_code_base_indent

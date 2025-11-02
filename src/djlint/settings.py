@@ -364,6 +364,7 @@ class Config:
             r"on[a-z]+|"
             r"data-[a-z\-]+|"
             r"x-[a-z\-]+|"
+            r"hx-[a-z\-:]+|"
             r"@[a-z\-]+|"
             r":[a-z\-]+|"
             r"v-[a-z\-]+|"

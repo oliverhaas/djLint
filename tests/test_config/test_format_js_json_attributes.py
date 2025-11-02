@@ -196,6 +196,84 @@ test_data = [
         }),
         id="js_object_default_indent",
     ),
+    pytest.param(
+        ('<div data-id="{{ input }}"></div>'),
+        ('<div data-id="{{ input }}"></div>\n'),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="template_tag_no_formatting",
+    ),
+    pytest.param(
+        (
+            "<div data-config='{% if user %}"
+            '{"active": true}{% endif %}\'></div>'
+        ),
+        (
+            '<div data-config=\'{% if user %}{"active": true}\n'
+            "{% endif %}\n"
+            "'></div>\n"
+        ),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="jinja_template_tag_with_json_no_js_formatting",
+    ),
+    pytest.param(
+        (
+            '<div data-config="{{ config.json }}" '
+            'onclick=\'{"action": "click"}\'></div>'
+        ),
+        (
+            '<div data-config="{{ config.json }}"\n'
+            '     onclick=\'{"action": "click"}\'></div>\n'
+        ),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="mixed_template_and_js_no_formatting_when_template_present",
+    ),
+    pytest.param(
+        (
+            '<div hx-on:click="document.getElementById('
+            "'{{ widget_id }}').value = this.dataset.id; "
+            "document.getElementById('{{ widget_id }}_display')"
+            ".value = this.textContent.trim(); "
+            "this.parentElement.innerHTML = '';\">"
+            "</div>"
+        ),
+        (
+            "<div hx-on:click=\"document.getElementById('{{ widget_id }}').value = this.dataset.id;\n"
+            "                  document.getElementById('{{ widget_id }}_display').value = this.textContent.trim();\n"
+            "                  this.parentElement.innerHTML = '';\">"
+            "</div>\n"
+        ),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="js_with_template_tokens_formatted_but_templates_preserved",
+    ),
+    pytest.param(
+        ('<div hx-on:click="foo.bar(); baz.qux();"></div>'),
+        (
+            '<div hx-on:click="foo.bar();\n'
+            '                  baz.qux();"></div>\n'
+        ),
+        ({
+            "format_attribute_js_json": True,
+            "max_attribute_length": 0,
+            "indent_js": 2,
+        }),
+        id="js_continuation_line_indentation",
+    ),
 ]
 
 
